@@ -648,10 +648,13 @@ class _EventsPlaceholderState extends State<_EventsPlaceholder> with AutomaticKe
           SizedBox(
             width: 48,
             height: 48,
-            child: IconButton(
-              icon: const Icon(Icons.add, color: AppColors.white, size: 24),
-              padding: EdgeInsets.zero,
-              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.CREATE_EVENT),
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: IconButton(
+                icon: const Icon(Icons.add, color: AppColors.white, size: 24),
+                padding: EdgeInsets.zero,
+                onPressed: () => Navigator.of(context).pushNamed(AppRoutes.CREATE_EVENT),
+              ),
             ),
           ),
         ],
@@ -675,27 +678,42 @@ class _EventsPlaceholderState extends State<_EventsPlaceholder> with AutomaticKe
   }
 
   Widget _buildFilterChip(String label, IconData icon) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: const Color(0xFF382929),
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            label,
-            style: const TextStyle(
-              fontFamily: 'SplineSans',
-              fontWeight: FontWeight.w500,
-              fontSize: 14,
-              color: AppColors.white,
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+          // Implementar lógica de filtro no futuro
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Filtro $label em breve!'),
+              backgroundColor: AppColors.primaryRed,
+              duration: const Duration(seconds: 1),
             ),
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: const Color(0xFF382929),
+            borderRadius: BorderRadius.circular(16),
           ),
-          const SizedBox(width: 8),
-          Icon(icon, size: 20, color: AppColors.white),
-        ],
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                label,
+                style: const TextStyle(
+                  fontFamily: 'SplineSans',
+                  fontWeight: FontWeight.w500,
+                  fontSize: 14,
+                  color: AppColors.white,
+                ),
+              ),
+              const SizedBox(width: 8),
+              Icon(icon, size: 20, color: AppColors.white),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -742,71 +760,82 @@ class _EventsPlaceholderState extends State<_EventsPlaceholder> with AutomaticKe
   }
 
   Widget _buildEventCard(Map<String, String> event) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            flex: 2,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  event['date']!,
-                  style: const TextStyle(
-                    fontFamily: 'SplineSans',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    color: Color(0xFFBA9C9C),
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  event['title']!,
-                  style: const TextStyle(
-                    fontFamily: 'SplineSans',
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: AppColors.white,
-                    height: 1.25,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  event['location']!,
-                  style: const TextStyle(
-                    fontFamily: 'SplineSans',
-                    fontWeight: FontWeight.w400,
-                    fontSize: 14,
-                    color: Color(0xFFBA9C9C),
-                    height: 1.5,
-                  ),
-                ),
-              ],
-            ),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.of(context).pushNamed(
+            AppRoutes.EVENT_DETAILS,
+            arguments: event,
+          );
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
           ),
-          const SizedBox(width: 16),
-          Container(
-            width: 130,
-            height: 70,
-            decoration: BoxDecoration(
-              color: AppColors.inputBackground,
-              borderRadius: BorderRadius.circular(12),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+            Expanded(
+              flex: 2,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    event['date']!,
+                    style: const TextStyle(
+                      fontFamily: 'SplineSans',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      color: Color(0xFFBA9C9C),
+                      height: 1.5,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    event['title']!,
+                    style: const TextStyle(
+                      fontFamily: 'SplineSans',
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: AppColors.white,
+                      height: 1.25,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    event['location']!,
+                    style: const TextStyle(
+                      fontFamily: 'SplineSans',
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14,
+                      color: Color(0xFFBA9C9C),
+                      height: 1.5,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            child: const Icon(
-              Icons.event,
-              color: AppColors.textHint,
-              size: 40,
+            const SizedBox(width: 16),
+            Container(
+              width: 130,
+              height: 70,
+              decoration: BoxDecoration(
+                color: AppColors.inputBackground,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.event,
+                color: AppColors.textHint,
+                size: 40,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
+    ),
     );
   }
 }

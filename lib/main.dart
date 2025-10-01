@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'screens/auth/login.dart';
 import 'screens/auth/register.dart';
 import 'screens/event/createEvent.dart';
+import 'screens/event/event_details_screen.dart';
+import 'screens/event/purchase_success_screen.dart';
 import 'screens/main/main_screen.dart';
 import 'screens/tickets/tickets_screen.dart';
 import 'utils/app_colors.dart';
@@ -91,6 +93,8 @@ class BoraEApp extends StatelessWidget {
             const MainScreen(), // Tela principal com navegação animada
         AppRoutes.TICKETS: (context) => const TicketsScreen(),
         AppRoutes.CREATE_EVENT: (context) => const CreateEventScreen(),
+        AppRoutes.EVENT_DETAILS: (context) => const EventDetailsScreen(),
+        AppRoutes.PURCHASE_SUCCESS: (context) => const PurchaseSuccessScreen(),
       },
     );
   }
