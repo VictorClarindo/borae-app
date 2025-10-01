@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../utils/app_colors.dart';
-import '../../utils/app_routes.dart';
-import './screens/auth/login.dart';
-import './screens/auth/register.dart';
-import './screens/home/home.dart';
+import 'screens/auth/login.dart';
+import 'screens/auth/register.dart';
+import 'screens/home/home.dart';
+import 'utils/app_colors.dart';
+import 'utils/app_routes.dart';
 
 // A função main() é onde tudo começa.
 void main() {
@@ -21,16 +21,17 @@ class BoraEApp extends StatelessWidget {
     // como navegação, temas e muito mais.
     return MaterialApp(
       title: 'BoraÊ',
-      debugShowCheckedModeBanner: false, // Remove a faixa "Debug" no canto da tela
-
+      debugShowCheckedModeBanner:
+          false, // Remove a faixa "Debug" no canto da tela
       // 2. CONFIGURAÇÃO DO TEMA GLOBAL
       // Todas as cores, fontes e estilos definidos aqui serão aplicados
       // em todo o aplicativo, garantindo consistência visual.
       theme: ThemeData(
-        fontFamily: 'SplineSans', // Lembre-se de configurar a fonte no pubspec.yaml
+        fontFamily:
+            'SplineSans', // Lembre-se de configurar a fonte no pubspec.yaml
         brightness: Brightness.dark,
         scaffoldBackgroundColor: AppColors.black,
-        
+
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.header,
           elevation: 0,
@@ -54,24 +55,23 @@ class BoraEApp extends StatelessWidget {
           contentPadding: const EdgeInsets.all(16),
         ),
 
-         elevatedButtonTheme: ElevatedButtonThemeData(
-      style: ElevatedButton.styleFrom(
-        // Esta linha define a cor de fundo de todos os botões elevados
-        backgroundColor: AppColors.primaryRed, // <--- AQUI!
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            // Esta linha define a cor de fundo de todos os botões elevados
+            backgroundColor: AppColors.primaryRed, // <--- AQUI!
+            // E esta, a cor do texto
+            foregroundColor: AppColors.white,
 
-        // E esta, a cor do texto
-        foregroundColor: AppColors.white,
-        
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            textStyle: const TextStyle(
+              fontFamily: 'SplineSans',
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
-        textStyle: const TextStyle(
-          fontFamily: 'SplineSans',
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-         ),
       ),
 
       // 3. CONFIGURAÇÃO DAS ROTAS DE NAVEGAÇÃO
@@ -83,8 +83,10 @@ class BoraEApp extends StatelessWidget {
       // Isso permite navegar entre telas de forma organizada.
       routes: {
         AppRoutes.LOGIN: (context) => const LoginScreen(),
-        AppRoutes.REGISTER: (context) => const RegisterScreen(), // Crie este arquivo com um esqueleto
-        AppRoutes.HOME: (context) => const HomeScreen(),     // Crie este arquivo também
+        AppRoutes.REGISTER: (context) =>
+            const RegisterScreen(), // Crie este arquivo com um esqueleto
+        AppRoutes.HOME: (context) =>
+            const HomeScreen(), // Crie este arquivo também
       },
     );
   }
