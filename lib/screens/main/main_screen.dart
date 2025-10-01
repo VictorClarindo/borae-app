@@ -600,60 +600,213 @@ class _TicketsContentState extends State<_TicketsContent> with AutomaticKeepAliv
 }
 
 /// Conteúdo de Eventos
-class _EventsPlaceholder extends StatelessWidget {
+class _EventsPlaceholder extends StatefulWidget {
+  @override
+  State<_EventsPlaceholder> createState() => _EventsPlaceholderState();
+}
+
+class _EventsPlaceholderState extends State<_EventsPlaceholder> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+    
     return Column(
       children: [
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-          decoration: const BoxDecoration(color: AppColors.header),
-          child: const Center(
-            child: Text('Eventos', style: TextStyle(fontFamily: 'SplineSans', fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.white)),
-          ),
-        ),
+        _buildHeader(context),
+        _buildFilterChips(),
         Expanded(
-          child: Center(
+          child: _buildEventsList(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildHeader(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+      decoration: const BoxDecoration(color: AppColors.header),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          const SizedBox(width: 48), // Espaço para centralizar o título
+          const Expanded(
+            child: Text(
+              'Eventos',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'SplineSans',
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+                color: AppColors.white,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 48,
+            height: 48,
+            child: IconButton(
+              icon: const Icon(Icons.add, color: AppColors.white, size: 24),
+              padding: EdgeInsets.zero,
+              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.CREATE_EVENT),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChips() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+      child: Row(
+        children: [
+          _buildFilterChip('Data', Icons.keyboard_arrow_down),
+          const SizedBox(width: 12),
+          _buildFilterChip('Faculdade', Icons.keyboard_arrow_down),
+          const SizedBox(width: 12),
+          _buildFilterChip('Tipo', Icons.keyboard_arrow_down),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFilterChip(String label, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      decoration: BoxDecoration(
+        color: const Color(0xFF382929),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            label,
+            style: const TextStyle(
+              fontFamily: 'SplineSans',
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+              color: AppColors.white,
+            ),
+          ),
+          const SizedBox(width: 8),
+          Icon(icon, size: 20, color: AppColors.white),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEventsList() {
+    final events = [
+      {
+        'date': 'Hoje',
+        'title': 'Festa do Calouro',
+        'location': 'Universidade Federal, 20h',
+        'image': 'assets/event1.png'
+      },
+      {
+        'date': 'Amanhã',
+        'title': 'Show de Talentos',
+        'location': 'Faculdade de Artes, 19h',
+        'image': 'assets/event2.png'
+      },
+      {
+        'date': 'Sábado',
+        'title': 'Feira de Ciências',
+        'location': 'Campus Central, 10h',
+        'image': 'assets/event3.png'
+      },
+      {
+        'date': 'Domingo',
+        'title': 'Campeonato de Xadrez',
+        'location': 'Clube de Xadrez, 14h',
+        'image': 'assets/event4.png'
+      },
+    ];
+
+    return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      itemCount: events.length,
+      itemBuilder: (context, index) {
+        final event = events[index];
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 16),
+          child: _buildEventCard(event),
+        );
+      },
+    );
+  }
+
+  Widget _buildEventCard(Map<String, String> event) {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            flex: 2,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Gerencie seus eventos',
-                  style: TextStyle(
+                Text(
+                  event['date']!,
+                  style: const TextStyle(
                     fontFamily: 'SplineSans',
-                    fontSize: 18,
-                    color: AppColors.white,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Color(0xFFBA9C9C),
+                    height: 1.5,
                   ),
                 ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(AppRoutes.CREATE_EVENT);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primaryRed,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
+                const SizedBox(height: 4),
+                Text(
+                  event['title']!,
+                  style: const TextStyle(
+                    fontFamily: 'SplineSans',
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColors.white,
+                    height: 1.25,
                   ),
-                  child: const Text(
-                    'Criar Evento',
-                    style: TextStyle(
-                      fontFamily: 'SplineSans',
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.white,
-                    ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  event['location']!,
+                  style: const TextStyle(
+                    fontFamily: 'SplineSans',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 14,
+                    color: Color(0xFFBA9C9C),
+                    height: 1.5,
                   ),
                 ),
               ],
             ),
           ),
-        ),
-      ],
+          const SizedBox(width: 16),
+          Container(
+            width: 130,
+            height: 70,
+            decoration: BoxDecoration(
+              color: AppColors.inputBackground,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: const Icon(
+              Icons.event,
+              color: AppColors.textHint,
+              size: 40,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
