@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../utils/app_colors.dart';
+import '../../utils/app_routes.dart';
 
 /// Tela principal que gerencia a navegação entre as abas com animação
 class MainScreen extends StatefulWidget {
@@ -598,7 +599,7 @@ class _TicketsContentState extends State<_TicketsContent> with AutomaticKeepAliv
   }
 }
 
-/// Placeholder para Eventos
+/// Conteúdo de Eventos
 class _EventsPlaceholder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -612,9 +613,44 @@ class _EventsPlaceholder extends StatelessWidget {
             child: Text('Eventos', style: TextStyle(fontFamily: 'SplineSans', fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.white)),
           ),
         ),
-        const Expanded(
+        Expanded(
           child: Center(
-            child: Text('Em breve...', style: TextStyle(fontFamily: 'SplineSans', fontSize: 18, color: AppColors.textHint)),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Text(
+                  'Gerencie seus eventos',
+                  style: TextStyle(
+                    fontFamily: 'SplineSans',
+                    fontSize: 18,
+                    color: AppColors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed(AppRoutes.CREATE_EVENT);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryRed,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                  ),
+                  child: const Text(
+                    'Criar Evento',
+                    style: TextStyle(
+                      fontFamily: 'SplineSans',
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
