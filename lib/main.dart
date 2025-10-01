@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'screens/auth/login.dart';
 import 'screens/auth/register.dart';
-import 'screens/home/home.dart';
+import 'screens/main/main_screen.dart';
+import 'screens/tickets/tickets_screen.dart';
 import 'utils/app_colors.dart';
 import 'utils/app_routes.dart';
 
@@ -86,7 +87,8 @@ class BoraEApp extends StatelessWidget {
         AppRoutes.REGISTER: (context) =>
             const RegisterScreen(), // Crie este arquivo com um esqueleto
         AppRoutes.HOME: (context) =>
-            const HomeScreen(), // Crie este arquivo também
+            const MainScreen(), // Tela principal com navegação animada
+        AppRoutes.TICKETS: (context) => const TicketsScreen(),
       },
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../utils/app_colors.dart';
+import '../../utils/app_routes.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -457,6 +458,11 @@ class _HomeScreenState extends State<HomeScreen> {
         setState(() {
           _selectedTab = index;
         });
+        
+        // Navegar para a tela de ingressos
+        if (index == 2) {
+          Navigator.of(context).pushNamed(AppRoutes.TICKETS);
+        }
       },
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8),
