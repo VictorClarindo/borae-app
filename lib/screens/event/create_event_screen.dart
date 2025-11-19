@@ -1,14 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+
 import '../../bloc/auth/auth_bloc.dart';
 import '../../bloc/auth/auth_state.dart';
 import '../../bloc/event/event_bloc.dart';
 import '../../bloc/event/event_event.dart';
 import '../../bloc/event/event_state.dart';
 import '../../models/event.dart';
-import '../../models/user.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_routes.dart';
 
@@ -108,7 +109,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         setState(() {
           _selectedDate = dateTime;
           _dateController.text = 
-              '${dateTime.day}/${dateTime.month}/${dateTime.year} ${time.hour}:${time.minute.toString().padLeft(2, '0')}';
+              '${dateTime.day.toString().padLeft(2, '0')}/${dateTime.month.toString().padLeft(2, '0')}/${dateTime.year} ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
         });
       }
     }
@@ -193,6 +194,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       case 1:
         break;
       case 2:
+        Navigator.of(context).pushReplacementNamed(AppRoutes.TICKETS);
         break;
       case 3:
         break;
@@ -377,7 +379,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
           borderRadius: BorderRadius.circular(12),
         ),
         child: DropdownButtonFormField<String>(
-          value: _selectedType,
+          initialValue: _selectedType,
           dropdownColor: const Color(0xFF382929),
           icon: const Icon(Icons.arrow_drop_down, color: Color(0xFFBA9C9C), size: 24),
           style: const TextStyle(
@@ -495,84 +497,38 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       ),
     );
   }
-        constraints: const BoxConstraints(
-          minWidth = 160,
-          maxWidth = 480,
-        ),
-        height: 56,
-        decoration: BoxDecoration(
-          color = const Color(0xFF382929),
-          borderRadius = BorderRadius.circular(12),
-        ),
-        child: DropdownButtonFormField<String>(
-          value = _selectedType,
-          dropdownColor = const Color(0xFF382929),
-          icon = const Icon(Icons.arrow_drop_down, color: Color(0xFFBA9C9C), size: 24),
-          style = const TextStyle(
-            fontFamily: 'SplineSans',
-            color: Color(0xFFBA9C9C),
-            fontSize: 16,
-            height: 1.5,
-          ),
-          decoration = const InputDecoration(
-            border: InputBorder.none,
-            contentPadding: EdgeInsets.symmetric(horizontal: 16),
-          ),
-          items = ['Tipo', 'Show', 'Festival', 'Teatro', 'Esporte', 'Outro']
-              .map((type) => DropdownMenuItem(
-                    value: type,
-                    child: Text(type),
-                  ))
-              .toList(),
-          onChanged = (value) {
-            setState(() {
-              _selectedType = value!;
-            });
-          },
-        ),
-      ),
-    );
-  }
 
   Widget _buildCreateButton() {
     return Padding(
       padding: const EdgeInsets.all(16),
-      child: Container(
-        constraints: const BoxConstraints(
-          minWidth: 84,
-          maxWidth: 480,
-        ),
-        height: 48,
-        child: ElevatedButton(
-          onPressed: _isLoading ? null : _createEvent,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryRed,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
+      child: BlocBuilder<EventBloc, EventState>(
+        builder: (context, state) {
+          final isLoading = state is EventLoading;
+          return Container(
+            constraints: const BoxConstraints(
+              minWidth: 160,
+              maxWidth: 480,
             ),
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-          ),
-          child: _isLoading
-              ? const SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(
-                    color: AppColors.white,
-                    strokeWidth: 2,
-                  ),
-                )
-              : const Text(
-                  'Criar',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontFamily: 'SplineSans',
-                    color: AppColors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    height: 1.5,
-                  ),
-                ),
-        ),
+            height: 48,
+            child: ElevatedButton(
+              onPressed: isLoading ? null : _createEvent,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryRed,
+                disabledBackgroundColor: AppColors.primaryRed.withOpacity(0.5),
+              ),
+              child: isLoading
+                  ? const SizedBox(
+                      height: 24,
+                      width: 24,
+                      child: CircularProgressIndicator(
+                        color: AppColors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                  : const Text('Criar Evento'),
+            ),
+          );
+        },
       ),
     );
   }
@@ -589,15 +545,12 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(0, Icons.home_outlined, 'Início'),
-            const SizedBox(width: 8),
-            _buildNavItem(1, Icons.event, 'Eventos'),
-            const SizedBox(width: 8),
-            _buildNavItem(2, Icons.confirmation_number_outlined, 'Ingressos'),
-            const SizedBox(width: 8),
-            _buildNavItem(3, Icons.person_outline, 'Perfil'),
+            _buildNavItem(0, Icons.home, 'Home'),
+            _buildNavItem(1, Icons.add_circle, 'Criar'),
+            _buildNavItem(2, Icons.confirmation_number, 'Ingressos'),
+            _buildNavItem(3, Icons.person, 'Perfil'),
           ],
         ),
       ),
@@ -612,32 +565,26 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         borderRadius: BorderRadius.circular(27),
         child: Container(
           height: 54,
-          decoration: isSelected
-              ? BoxDecoration(
-                  borderRadius: BorderRadius.circular(27),
-                )
-              : null,
+          decoration: BoxDecoration(
+            color: isSelected ? AppColors.primaryRed : Colors.transparent,
+            borderRadius: BorderRadius.circular(27),
+          ),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              SizedBox(
-                width: 24,
-                height: 32,
-                child: Icon(
-                  icon,
-                  size: 24,
-                  color: isSelected ? AppColors.white : const Color(0xFFBA9C9C),
-                ),
+              Icon(
+                icon,
+                color: isSelected ? AppColors.white : const Color(0xFFBA9C9C),
+                size: 24,
               ),
               const SizedBox(height: 4),
               Text(
                 label,
                 style: TextStyle(
                   fontFamily: 'SplineSans',
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
-                  height: 1.5,
                   color: isSelected ? AppColors.white : const Color(0xFFBA9C9C),
+                  fontSize: 10,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
             ],
