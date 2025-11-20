@@ -60,3 +60,19 @@ class AuthPasswordResetRequested extends AuthEvent {
   @override
   List<Object?> get props => [email];
 }
+
+/// Evento: Atualizar perfil (nome, foto)
+class AuthProfileUpdateRequested extends AuthEvent {
+  final String userId;
+  final String? name;
+  final String? photoUrl;
+
+  const AuthProfileUpdateRequested({
+    required this.userId,
+    this.name,
+    this.photoUrl,
+  });
+
+  @override
+  List<Object?> get props => [userId, name, photoUrl];
+}

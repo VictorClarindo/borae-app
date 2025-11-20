@@ -18,6 +18,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLogoutRequested>(_onLogoutRequested);
     on<AuthCheckRequested>(_onCheckRequested);
     on<AuthPasswordResetRequested>(_onPasswordResetRequested);
+    on<AuthProfileUpdateRequested>(_onProfileUpdateRequested);
   }
 
   /// Handler: Login
@@ -34,6 +35,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       );
 
       emit(AuthAuthenticated(user: user));
+    } catch (e) {
+      emit(AuthError(message: e.toString()));
+    }
+  }
+
+  /// Handler: Atualizar perfil
+  Future<void> _onProfileUpdateRequested(
+    AuthProfileUpdateRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    // Manter estado atual para UI (poderia emitir loading se quisesse spinner)
+    try {
+      await _authDataProvider.updateUserProfile(
+        userId: event.userId,
+        name: event.name,
+        photoUrl: event.photoUrl,
+      );
+
+      // Buscar usuário atualizado
+      final updatedUser = await _authDataProvider.getCurrentUser();
+      if (updatedUser == null) {
+        emit(const AuthError(message: 'Usuário não encontrado após atualização'));
+        return;
+      }
+      emit(AuthProfileUpdateSuccess(user: updatedUser));
+      // Voltar para estado autenticado com dados novos
+      emit(AuthAuthenticated(user: updatedUser));
     } catch (e) {
       emit(AuthError(message: e.toString()));
     }

@@ -55,30 +55,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
           _emailController.text = user.email;
         }
 
-        return Scaffold(
-          backgroundColor: AppColors.black,
-          body: SafeArea(
-            child: Column(
-              children: [
-                _buildHeader(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        children: [
-                          _buildProfileHeader(user),
-                          const SizedBox(height: 32),
-                          _buildProfileForm(user),
-                          const SizedBox(height: 24),
-                          _buildActionButtons(),
-                        ],
+        return BlocListener<AuthBloc, AuthState>(
+          listenWhen: (previous, current) => current is AuthProfileUpdateSuccess || current is AuthError,
+          listener: (context, state) {
+            if (state is AuthProfileUpdateSuccess) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Perfil atualizado com sucesso!'),
+                  backgroundColor: Colors.green,
+                ),
+              );
+            }
+            if (state is AuthError) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            }
+          },
+          child: Scaffold(
+            backgroundColor: AppColors.black,
+            body: SafeArea(
+              child: Column(
+                children: [
+                  _buildHeader(),
+                  Expanded(
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          children: [
+                            _buildProfileHeader(user),
+                            const SizedBox(height: 32),
+                            _buildProfileForm(user),
+                            const SizedBox(height: 24),
+                            _buildActionButtons(user),
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
-                if (widget.showBottomNav) _buildBottomNavBar(),
-              ],
+                  if (widget.showBottomNav) _buildBottomNavBar(),
+                ],
+              ),
             ),
           ),
         );
@@ -269,7 +290,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildActionButtons() {
+  Widget _buildActionButtons(User user) {
     return Column(
       children: [
         // Botão Editar/Salvar
@@ -280,16 +301,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () {
               if (_isEditing) {
                 if (_formKey.currentState!.validate()) {
-                  // TODO: Implementar atualização do perfil
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Funcionalidade de edição em desenvolvimento'),
-                      backgroundColor: Colors.orange,
+                  // Disparar atualização de perfil
+                  context.read<AuthBloc>().add(
+                    AuthProfileUpdateRequested(
+                      userId: user.id,
+                      name: _nameController.text.trim(),
                     ),
                   );
-                  setState(() {
-                    _isEditing = false;
-                  });
+                  setState(() => _isEditing = false);
                 }
               } else {
                 setState(() {
@@ -327,10 +346,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 setState(() {
                   _isEditing = false;
                   // Restaurar valores originais
-                  final state = context.read<AuthBloc>().state;
-                  if (state is AuthAuthenticated) {
-                    _nameController.text = state.user.name;
-                  }
+                  _nameController.text = user.name;
                 });
               },
               style: OutlinedButton.styleFrom(

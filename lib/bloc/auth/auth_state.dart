@@ -50,3 +50,13 @@ class AuthError extends AuthState {
 class AuthPasswordResetSuccess extends AuthState {
   const AuthPasswordResetSuccess();
 }
+
+/// Estado de sucesso ao atualizar perfil
+class AuthProfileUpdateSuccess extends AuthState {
+  final User user;
+
+  const AuthProfileUpdateSuccess({required this.user});
+
+  @override
+  List<Object?> get props => [user];
+}

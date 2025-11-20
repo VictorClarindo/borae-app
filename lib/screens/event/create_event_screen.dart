@@ -155,6 +155,17 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
 
     final user = authState.user;
 
+    // Verificar se usuário é organizador
+    if (user.userType != 'organizer') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Somente organizadores podem criar eventos.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     // Criar objeto Event
     final event = Event(
       id: DateTime.now().millisecondsSinceEpoch.toString(),

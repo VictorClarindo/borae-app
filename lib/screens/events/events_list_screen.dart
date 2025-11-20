@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
+import '../../bloc/auth/auth_bloc.dart';
+import '../../bloc/auth/auth_state.dart';
 import '../../bloc/event/event_bloc.dart';
 import '../../models/event.dart';
 import '../../utils/app_colors.dart';
@@ -28,6 +30,8 @@ class _EventsListScreenState extends State<EventsListScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = context.watch<AuthBloc>().state;
+    final isOrganizer = authState is AuthAuthenticated && authState.user.userType == 'organizer';
     return Scaffold(
       backgroundColor: AppColors.black,
       appBar: AppBar(
@@ -39,6 +43,15 @@ class _EventsListScreenState extends State<EventsListScreen> {
           ),
         ],
       ),
+      floatingActionButton: isOrganizer
+          ? FloatingActionButton(
+              onPressed: () => Navigator.of(context).pushNamed(AppRoutes.CREATE_EVENT),
+              backgroundColor: AppColors.primaryRed,
+              tooltip: 'Criar evento',
+              child: const Icon(Icons.add, color: AppColors.white),
+            )
+          : null,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       body: Column(
         children: [
           _buildFilterChips(),
