@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../data/ticket_data_provider.dart';
 import 'ticket_event.dart';
 import 'ticket_state.dart';
+// Imports removidos - usamos tipos via evento TicketPurchaseRequest
 
 /// TICKET BLOC - Gerenciador de Estado de Ingressos
 /// Camada de lógica de negócio que conecta a UI com o Data Provider
@@ -13,28 +14,33 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       : _ticketDataProvider = ticketDataProvider,
         super(const TicketInitial()) {
     // Registrar handlers para cada evento
-    on<TicketPurchase>(_onPurchase);
+  on<TicketPurchaseRequest>(_onPurchaseRequest);
     on<TicketLoadUserTickets>(_onLoadUserTickets);
     on<TicketCancel>(_onCancel);
     on<TicketValidate>(_onValidate);
     on<TicketLoadActive>(_onLoadActive);
   }
 
-  /// Handler: Comprar ingresso
-  Future<void> _onPurchase(
-    TicketPurchase event,
+  /// Handler: Comprar ingresso(s)
+  Future<void> _onPurchaseRequest(
+    TicketPurchaseRequest event,
     Emitter<TicketState> emit,
   ) async {
     emit(const TicketLoading());
 
     try {
-      await _ticketDataProvider.createTicket(event.ticket);
-      emit(const TicketOperationSuccess(
-          message: 'Ingresso comprado com sucesso!'));
-      
-      // Recarregar ingressos do usuário
-      add(TicketLoadUserTickets(userId: event.ticket.userId));
+      print('[TicketBloc] PurchaseRequest eventId=${event.event.id} userId=${event.user.id} qty=${event.quantity}');
+      final tickets = await _ticketDataProvider.purchaseTickets(
+        event: event.event,
+        user: event.user,
+        quantity: event.quantity,
+      );
+      print('[TicketBloc] PurchaseSuccess created=${tickets.length} firstTicketId=${tickets.isNotEmpty ? tickets.first.id : 'NONE'}');
+      emit(TicketOperationSuccess(
+          message: 'Compra realizada: ${tickets.length} ingresso(s).'));
+      add(TicketLoadUserTickets(userId: event.user.id));
     } catch (e) {
+      print('[TicketBloc] PurchaseError ${e.toString()}');
       emit(TicketError(message: e.toString()));
     }
   }

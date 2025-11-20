@@ -1,14 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:intl/intl.dart';
+
 import '../../bloc/auth/auth_bloc.dart';
 import '../../bloc/auth/auth_state.dart';
 import '../../bloc/ticket/ticket_bloc.dart';
 import '../../bloc/ticket/ticket_event.dart';
 import '../../bloc/ticket/ticket_state.dart';
 import '../../models/event.dart';
-import '../../models/ticket.dart';
+// import '../../models/ticket.dart'; // não usado após refatoração
 import '../../utils/app_colors.dart';
 import '../../utils/app_routes.dart';
 
@@ -480,26 +481,13 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
       return;
     }
 
-    // Criar múltiplos ingressos se quantidade > 1
-    for (int i = 0; i < _ticketQuantity; i++) {
-      final ticket = Ticket(
-        id: '', // Será gerado pelo Firestore
-        userId: authState.user.id,
-        userName: authState.user.name,
-        eventId: event!.id,
-        eventName: event!.name,
-        eventDate: event!.date,
-        eventLocation: event!.location,
-        eventImageUrl: event!.imageUrl,
-        price: event!.price,
-        purchaseDate: DateTime.now(),
-        qrCode: '', // Será gerado pelo data provider
-        status: 'active',
-      );
-      
-      context.read<TicketBloc>().add(
-            TicketPurchase(ticket: ticket),
-          );
-    }
+    // Disparar requisição de compra agrupada
+    context.read<TicketBloc>().add(
+      TicketPurchaseRequest(
+        event: event!,
+        user: authState.user,
+        quantity: _ticketQuantity,
+      ),
+    );
   }
 }

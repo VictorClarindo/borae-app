@@ -547,8 +547,8 @@ class _TicketsContentState extends State<_TicketsContent> with AutomaticKeepAliv
 
   Widget _buildUpcomingTickets() {
     final tickets = [
-      {'title': 'Festa do Calouro 2024', 'date': '22 de março', 'time': '20:00', 'location': 'Espaço Cultural'},
-      {'title': 'Show de Talentos da Engenharia', 'date': '15 de abril', 'time': '19:00', 'location': 'Auditório Central'},
+      {'title': 'Festa de Arromba', 'date': '22 de junho', 'time': '20:00', 'location': 'Espaço Cultural'},
+      {'title': 'Show de Talentos da Engenharia', 'date': '22 de junho', 'time': '20:00', 'location': 'Auditório Central'},
     ];
 
     return Column(

@@ -1,6 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert';
+import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
+
+import '../models/event.dart';
 import '../models/ticket.dart';
+import '../models/user.dart';
 
 /// DATA PROVIDER - Camada de acesso aos dados de ingressos
 /// Responsável por toda comunicação com Firestore para ingressos
@@ -24,6 +30,74 @@ class TicketDataProvider {
     } catch (e) {
       throw Exception('Erro ao criar ingresso: $e');
     }
+  }
+
+  /// Comprar ingressos com transação segura
+  Future<List<Ticket>> purchaseTickets({
+    required Event event,
+    required User user,
+    int quantity = 1,
+  }) async {
+    if (quantity < 1) {
+      throw Exception('Quantidade inválida');
+    }
+    print('[purchaseTickets] START event=${event.id} user=${user.id} qty=$quantity');
+    // Primeiro passo: transação apenas para decrementar disponibilidade
+    await _firestore.runTransaction((transaction) async {
+      final eventRef = _firestore.collection('events').doc(event.id);
+      final snap = await transaction.get(eventRef);
+      if (!snap.exists) throw Exception('Evento não encontrado');
+      final data = snap.data() as Map<String, dynamic>;
+      final available = data['availableTickets'] as int? ?? 0;
+      print('[purchaseTickets][transaction] availableBefore=$available requested=$quantity');
+      if (available < quantity) throw Exception('Ingressos indisponíveis');
+      transaction.update(eventRef, {
+        'availableTickets': available - quantity,
+      });
+      print('[purchaseTickets][transaction] decremented -> newAvailable=${available - quantity}');
+    });
+
+    // Segundo passo: criar ingressos e atualizar usuário em lote
+    final batch = _firestore.batch();
+    final tickets = <Ticket>[];
+    final now = DateTime.now();
+  final random = Random();
+
+    for (int i = 0; i < quantity; i++) {
+      final ticketId = _firestore.collection('tickets').doc().id;
+  final qrRandom = random.nextInt(1000000000); // < 1e9 evita RangeError em web
+  final qrSource = '${ticketId}_${user.id}_${event.id}_${now.millisecondsSinceEpoch}_$qrRandom';
+      final qrCode = sha256.convert(utf8.encode(qrSource)).toString().substring(0, 16);
+  print('[purchaseTickets] Generating ticket $i id=$ticketId qrRand=$qrRandom');
+
+      final ticket = Ticket(
+        id: ticketId,
+        userId: user.id,
+        userName: user.name,
+        eventId: event.id,
+        eventName: event.name,
+        eventDate: event.date,
+        eventLocation: event.location,
+        eventImageUrl: event.imageUrl,
+        price: event.price,
+        purchaseDate: now,
+        qrCode: qrCode,
+        status: 'active',
+      );
+      tickets.add(ticket);
+      final ticketRef = _firestore.collection('tickets').doc(ticketId);
+      batch.set(ticketRef, ticket.toJson());
+    }
+
+    // Update do usuário (merge) fora de transação
+    final userRef = _firestore.collection('users').doc(user.id);
+    batch.set(userRef, {
+      'purchasedTickets': FieldValue.arrayUnion(tickets.map((t) => t.id).toList()),
+    }, SetOptions(merge: true));
+
+    await batch.commit();
+    print('[purchaseTickets] COMMIT OK created=${tickets.length}');
+    return tickets;
   }
 
   /// Buscar ingressos do usuário

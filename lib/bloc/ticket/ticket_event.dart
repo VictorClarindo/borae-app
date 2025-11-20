@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 
-import '../../models/ticket.dart';
+// import '../../models/ticket.dart'; // não necessário no novo evento
+import '../../models/event.dart';
+import '../../models/user.dart';
 
 /// EVENTOS DO TICKET BLOC
 /// Define todas as ações relacionadas a ingressos
@@ -12,13 +14,19 @@ abstract class TicketEvent extends Equatable {
 }
 
 /// Evento: Comprar ingresso
-class TicketPurchase extends TicketEvent {
-  final Ticket ticket;
+class TicketPurchaseRequest extends TicketEvent {
+  final Event event;
+  final User user;
+  final int quantity;
 
-  const TicketPurchase({required this.ticket});
+  const TicketPurchaseRequest({
+    required this.event,
+    required this.user,
+    this.quantity = 1,
+  });
 
   @override
-  List<Object?> get props => [ticket];
+  List<Object?> get props => [event, user, quantity];
 }
 
 /// Evento: Carregar ingressos do usuário
