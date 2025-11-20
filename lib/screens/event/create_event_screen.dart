@@ -98,6 +98,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
         },
       );
 
+      if (!mounted) return; // Garantir que contexto ainda está válido após awaits
       if (time != null) {
         final dateTime = DateTime(
           picked.year,
@@ -214,7 +215,8 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                 backgroundColor: Colors.green,
               ),
             );
-            Navigator.of(context).pop();
+            // Navegar para Home e recarregar eventos
+            Navigator.of(context).pushReplacementNamed(AppRoutes.HOME);
           }
           
           if (state is EventError) {

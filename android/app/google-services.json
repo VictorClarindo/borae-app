@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "611650116188",
+    "project_id": "borae-34b9e",
+    "storage_bucket": "borae-34b9e.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:611650116188:android:f8fb78a17e89dd6ff82499",
+        "android_client_info": {
+          "package_name": "com.example.borae_application"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAapS8I1t9qEa-90AvjNg72d8M8WqPlGGE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

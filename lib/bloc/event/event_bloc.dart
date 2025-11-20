@@ -1,6 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/event_data_provider.dart';
+import '../../models/event.dart';
 import 'event_event.dart';
 import 'event_state.dart';
 
@@ -21,6 +22,11 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     on<EventLoadByType>(_onLoadByType);
     on<EventLoadByFaculty>(_onLoadByFaculty);
     on<EventLoadById>(_onLoadById);
+  }
+
+  /// Expor stream em tempo real de eventos ativos
+  Stream<List<Event>> watchEvents() {
+    return _eventDataProvider.eventsStream();
   }
 
   /// Handler: Carregar todos os eventos
@@ -67,10 +73,8 @@ class EventBloc extends Bloc<EventEvent, EventState> {
         event.event,
         imageFile: event.imageFile,
       );
+      // Emitir sucesso (lista será atualizada via stream na UI)
       emit(const EventOperationSuccess(message: 'Evento criado com sucesso!'));
-      
-      // Recarregar eventos
-      add(const EventLoadAll());
     } catch (e) {
       emit(EventError(message: e.toString()));
     }
@@ -88,11 +92,7 @@ class EventBloc extends Bloc<EventEvent, EventState> {
         event.event,
         imageFile: event.imageFile,
       );
-      emit(const EventOperationSuccess(
-          message: 'Evento atualizado com sucesso!'));
-      
-      // Recarregar eventos
-      add(const EventLoadAll());
+      emit(const EventOperationSuccess(message: 'Evento atualizado com sucesso!'));
     } catch (e) {
       emit(EventError(message: e.toString()));
     }
@@ -108,9 +108,6 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     try {
       await _eventDataProvider.deleteEvent(event.eventId);
       emit(const EventOperationSuccess(message: 'Evento deletado com sucesso!'));
-      
-      // Recarregar eventos
-      add(const EventLoadAll());
     } catch (e) {
       emit(EventError(message: e.toString()));
     }

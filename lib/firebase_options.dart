@@ -27,10 +27,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for windows - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for linux - '
@@ -44,39 +41,47 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'YOUR_WEB_API_KEY',
-    appId: '1:123456789:web:abcdef123456',
-    messagingSenderId: '123456789',
-    projectId: 'borae-app',
-    authDomain: 'borae-app.firebaseapp.com',
-    storageBucket: 'borae-app.appspot.com',
+    apiKey: 'AIzaSyBR_7x2Ynziv823vMS-lz5PAaBdD92xLD4',
+    appId: '1:611650116188:web:0c25fab6aba671cef82499',
+    messagingSenderId: '611650116188',
+    projectId: 'borae-34b9e',
+    authDomain: 'borae-34b9e.firebaseapp.com',
+    storageBucket: 'borae-34b9e.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'YOUR_ANDROID_API_KEY',
-    appId: '1:123456789:android:abcdef123456',
-    messagingSenderId: '123456789',
-    projectId: 'borae-app',
-    storageBucket: 'borae-app.appspot.com',
+    apiKey: 'AIzaSyAapS8I1t9qEa-90AvjNg72d8M8WqPlGGE',
+    appId: '1:611650116188:android:f8fb78a17e89dd6ff82499',
+    messagingSenderId: '611650116188',
+    projectId: 'borae-34b9e',
+    storageBucket: 'borae-34b9e.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'YOUR_IOS_API_KEY',
-    appId: '1:123456789:ios:abcdef123456',
-    messagingSenderId: '123456789',
-    projectId: 'borae-app',
-    storageBucket: 'borae-app.appspot.com',
-    iosClientId: '123456789-abcdefghijklmnop.apps.googleusercontent.com',
-    iosBundleId: 'com.borae.application',
+    apiKey: 'AIzaSyA_AAasASBhPFNYHb3zfj-N2VWGH5zSJ5U',
+    appId: '1:611650116188:ios:cc05ae053e5dbd0cf82499',
+    messagingSenderId: '611650116188',
+    projectId: 'borae-34b9e',
+    storageBucket: 'borae-34b9e.firebasestorage.app',
+    iosBundleId: 'com.example.boraeApplication',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'YOUR_MACOS_API_KEY',
-    appId: '1:123456789:ios:abcdef123456',
-    messagingSenderId: '123456789',
-    projectId: 'borae-app',
-    storageBucket: 'borae-app.appspot.com',
-    iosClientId: '123456789-abcdefghijklmnop.apps.googleusercontent.com',
-    iosBundleId: 'com.borae.application',
+    apiKey: 'AIzaSyA_AAasASBhPFNYHb3zfj-N2VWGH5zSJ5U',
+    appId: '1:611650116188:ios:cc05ae053e5dbd0cf82499',
+    messagingSenderId: '611650116188',
+    projectId: 'borae-34b9e',
+    storageBucket: 'borae-34b9e.firebasestorage.app',
+    iosBundleId: 'com.example.boraeApplication',
   );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyBR_7x2Ynziv823vMS-lz5PAaBdD92xLD4',
+    appId: '1:611650116188:web:5f8a96626716589df82499',
+    messagingSenderId: '611650116188',
+    projectId: 'borae-34b9e',
+    authDomain: 'borae-34b9e.firebaseapp.com',
+    storageBucket: 'borae-34b9e.firebasestorage.app',
+  );
+
 }

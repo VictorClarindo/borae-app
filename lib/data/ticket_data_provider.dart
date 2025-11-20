@@ -32,12 +32,16 @@ class TicketDataProvider {
       final querySnapshot = await _firestore
           .collection('tickets')
           .where('userId', isEqualTo: userId)
-          .orderBy('purchaseDate', descending: true)
           .get();
 
-      return querySnapshot.docs
+      // Ordenar manualmente no código para evitar necessidade de índice
+      final tickets = querySnapshot.docs
           .map((doc) => Ticket.fromFirestore(doc))
           .toList();
+      
+      tickets.sort((a, b) => b.purchaseDate.compareTo(a.purchaseDate));
+      
+      return tickets;
     } catch (e) {
       throw Exception('Erro ao buscar ingressos do usuário: $e');
     }
@@ -49,12 +53,16 @@ class TicketDataProvider {
       final querySnapshot = await _firestore
           .collection('tickets')
           .where('eventId', isEqualTo: eventId)
-          .orderBy('purchaseDate', descending: true)
           .get();
 
-      return querySnapshot.docs
+      // Ordenar manualmente no código para evitar necessidade de índice
+      final tickets = querySnapshot.docs
           .map((doc) => Ticket.fromFirestore(doc))
           .toList();
+      
+      tickets.sort((a, b) => b.purchaseDate.compareTo(a.purchaseDate));
+      
+      return tickets;
     } catch (e) {
       throw Exception('Erro ao buscar ingressos do evento: $e');
     }

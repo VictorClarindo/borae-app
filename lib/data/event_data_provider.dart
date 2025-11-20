@@ -46,10 +46,14 @@ class EventDataProvider {
       final querySnapshot = await _firestore
           .collection('events')
           .where('isActive', isEqualTo: true)
-          .orderBy('date', descending: false)
           .get();
 
-      return querySnapshot.docs.map((doc) => Event.fromFirestore(doc)).toList();
+      final events = querySnapshot.docs.map((doc) => Event.fromFirestore(doc)).toList();
+      
+      // Ordenar por data em memória (evita necessidade de índice composto)
+      events.sort((a, b) => a.date.compareTo(b.date));
+      
+      return events;
     } catch (e) {
       throw Exception('Erro ao buscar eventos: $e');
     }
@@ -61,10 +65,14 @@ class EventDataProvider {
       final querySnapshot = await _firestore
           .collection('events')
           .where('organizerId', isEqualTo: organizerId)
-          .orderBy('date', descending: true)
           .get();
 
-      return querySnapshot.docs.map((doc) => Event.fromFirestore(doc)).toList();
+      final events = querySnapshot.docs.map((doc) => Event.fromFirestore(doc)).toList();
+      
+      // Ordenar por data em memória
+      events.sort((a, b) => b.date.compareTo(a.date));
+      
+      return events;
     } catch (e) {
       throw Exception('Erro ao buscar eventos do organizador: $e');
     }
@@ -133,10 +141,14 @@ class EventDataProvider {
           .collection('events')
           .where('type', isEqualTo: type)
           .where('isActive', isEqualTo: true)
-          .orderBy('date', descending: false)
           .get();
 
-      return querySnapshot.docs.map((doc) => Event.fromFirestore(doc)).toList();
+      final events = querySnapshot.docs.map((doc) => Event.fromFirestore(doc)).toList();
+      
+      // Ordenar por data em memória
+      events.sort((a, b) => a.date.compareTo(b.date));
+      
+      return events;
     } catch (e) {
       throw Exception('Erro ao buscar eventos por tipo: $e');
     }
@@ -149,10 +161,14 @@ class EventDataProvider {
           .collection('events')
           .where('faculty', isEqualTo: faculty)
           .where('isActive', isEqualTo: true)
-          .orderBy('date', descending: false)
           .get();
 
-      return querySnapshot.docs.map((doc) => Event.fromFirestore(doc)).toList();
+      final events = querySnapshot.docs.map((doc) => Event.fromFirestore(doc)).toList();
+      
+      // Ordenar por data em memória
+      events.sort((a, b) => a.date.compareTo(b.date));
+      
+      return events;
     } catch (e) {
       throw Exception('Erro ao buscar eventos por faculdade: $e');
     }
@@ -189,10 +205,13 @@ class EventDataProvider {
     return _firestore
         .collection('events')
         .where('isActive', isEqualTo: true)
-        .orderBy('date', descending: false)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => Event.fromFirestore(doc)).toList());
+        .map((snapshot) {
+          final events = snapshot.docs.map((doc) => Event.fromFirestore(doc)).toList();
+          // Ordenar por data em memória
+          events.sort((a, b) => a.date.compareTo(b.date));
+          return events;
+        });
   }
 
   /// Upload de imagem do evento

@@ -459,9 +459,20 @@ class _HomeScreenState extends State<HomeScreen> {
           _selectedTab = index;
         });
         
-        // Navegar para a tela de ingressos
-        if (index == 2) {
-          Navigator.of(context).pushNamed(AppRoutes.TICKETS);
+        // Navegar para diferentes telas
+        switch (index) {
+          case 1:
+            // Eventos
+            Navigator.of(context).pushNamed(AppRoutes.EVENTS_LIST);
+            break;
+          case 2:
+            // Ingressos
+            Navigator.of(context).pushNamed(AppRoutes.TICKETS);
+            break;
+          case 3:
+            // Perfil
+            Navigator.of(context).pushNamed(AppRoutes.PROFILE);
+            break;
         }
       },
       child: Container(

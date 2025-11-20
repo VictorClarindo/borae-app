@@ -4,8 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
 import '../../bloc/event/event_bloc.dart';
-import '../../bloc/event/event_event.dart';
-import '../../bloc/event/event_state.dart';
 import '../../models/event.dart';
 import '../../utils/app_colors.dart';
 import '../../utils/app_routes.dart';
@@ -22,23 +20,10 @@ class EventsListScreen extends StatefulWidget {
 class _EventsListScreenState extends State<EventsListScreen> {
   String _selectedFilter = 'Todos';
 
-  @override
-  void initState() {
-    super.initState();
-    // Carregar eventos ao iniciar a tela
-    context.read<EventBloc>().add(const EventLoadAll());
-  }
-
   void _applyFilter(String filter) {
     setState(() {
       _selectedFilter = filter;
     });
-
-    if (filter == 'Todos') {
-      context.read<EventBloc>().add(const EventLoadAll());
-    } else {
-      context.read<EventBloc>().add(EventLoadByType(type: filter));
-    }
   }
 
   @override
@@ -58,9 +43,10 @@ class _EventsListScreenState extends State<EventsListScreen> {
         children: [
           _buildFilterChips(),
           Expanded(
-            child: BlocBuilder<EventBloc, EventState>(
-              builder: (context, state) {
-                if (state is EventLoading) {
+            child: StreamBuilder<List<Event>>(
+              stream: context.read<EventBloc>().watchEvents(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const Center(
                     child: CircularProgressIndicator(
                       color: AppColors.primaryRed,
@@ -68,7 +54,7 @@ class _EventsListScreenState extends State<EventsListScreen> {
                   );
                 }
 
-                if (state is EventError) {
+                if (snapshot.hasError) {
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -80,61 +66,53 @@ class _EventsListScreenState extends State<EventsListScreen> {
                         ),
                         const SizedBox(height: 16),
                         Text(
-                          state.message,
+                          'Erro ao carregar eventos',
                           style: const TextStyle(color: AppColors.textHint),
                           textAlign: TextAlign.center,
-                        ),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () {
-                            context.read<EventBloc>().add(const EventLoadAll());
-                          },
-                          child: const Text('Tentar Novamente'),
                         ),
                       ],
                     ),
                   );
                 }
 
-                if (state is EventLoaded) {
-                  if (state.events.isEmpty) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(
-                            Icons.event_busy,
-                            size: 64,
-                            color: AppColors.textHint,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            'Nenhum evento encontrado',
-                            style: const TextStyle(
-                              color: AppColors.textHint,
-                              fontSize: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+                final events = snapshot.data ?? [];
+                final filtered = _selectedFilter == 'Todos'
+                    ? events
+                    : events.where((e) => e.type == _selectedFilter).toList();
 
-                  return RefreshIndicator(
-                    onRefresh: () async {
-                      context.read<EventBloc>().add(const EventLoadAll());
-                    },
-                    child: ListView.builder(
-                      padding: const EdgeInsets.all(16),
-                      itemCount: state.events.length,
-                      itemBuilder: (context, index) {
-                        return _buildEventCard(state.events[index]);
-                      },
+                if (filtered.isEmpty) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(
+                          Icons.event_busy,
+                          size: 64,
+                          color: AppColors.textHint,
+                        ),
+                        SizedBox(height: 16),
+                        Text(
+                          'Nenhum evento encontrado',
+                          style: TextStyle(
+                            color: AppColors.textHint,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ],
                     ),
                   );
                 }
 
-                return const SizedBox.shrink();
+                return RefreshIndicator(
+                  onRefresh: () async {/* Stream já atualiza automaticamente */},
+                  child: ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: filtered.length,
+                    itemBuilder: (context, index) {
+                      return _buildEventCard(filtered[index]);
+                    },
+                  ),
+                );
               },
             ),
           ),

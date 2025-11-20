@@ -15,7 +15,9 @@ import 'screens/auth/register.dart';
 import 'screens/event/create_event_screen.dart';
 import 'screens/event/event_details_screen.dart';
 import 'screens/event/purchase_success_screen.dart';
+import 'screens/events/events_list_screen.dart';
 import 'screens/main/main_screen.dart';
+import 'screens/profile/profile_screen.dart';
 import 'screens/tickets/tickets_screen.dart';
 import 'utils/app_colors.dart';
 import 'utils/app_routes.dart';
@@ -112,11 +114,13 @@ class BoraEApp extends StatelessWidget {
           AppRoutes.LOGIN: (context) => const LoginScreen(),
           AppRoutes.REGISTER: (context) => const RegisterScreen(),
           AppRoutes.HOME: (context) => const MainScreen(),
+          AppRoutes.EVENTS_LIST: (context) => const EventsListScreen(),
           AppRoutes.TICKETS: (context) => const TicketsScreen(),
           AppRoutes.CREATE_EVENT: (context) => const CreateEventScreen(),
           AppRoutes.EVENT_DETAILS: (context) => const EventDetailsScreen(),
           AppRoutes.PURCHASE_SUCCESS: (context) =>
               const PurchaseSuccessScreen(),
+          AppRoutes.PROFILE: (context) => const ProfileScreen(),
         },
       ),
     );
