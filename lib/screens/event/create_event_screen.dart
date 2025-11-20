@@ -1,8 +1,6 @@
-import 'dart:io';
-
+// Imports de imagem removidos
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../bloc/auth/auth_bloc.dart';
 import '../../bloc/auth/auth_state.dart';
@@ -32,7 +30,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
   
   String _selectedType = 'Tipo';
   int _selectedNavIndex = 1;
-  File? _selectedImage;
+  // Campo de imagem removido
   DateTime? _selectedDate;
 
   @override
@@ -47,16 +45,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     super.dispose();
   }
 
-  Future<void> _pickImage() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-    
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImage = File(pickedFile.path);
-      });
-    }
-  }
+  // _pickImage removido
 
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
@@ -186,12 +175,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     );
 
     // Disparar evento no EventBloc
-    context.read<EventBloc>().add(
-      EventCreate(
-        event: event,
-        imageFile: _selectedImage,
-      ),
-    );
+    context.read<EventBloc>().add(EventCreate(event: event));
   }
 
   void _navigateToTab(int index) {
@@ -278,7 +262,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
                           controller: _facultyController,
                           hint: 'Faculdade (Opcional)',
                         ),
-                        _buildImagePicker(),
+                        // Campo de imagem removido
                         _buildCreateButton(),
                       ],
                     ),
@@ -467,49 +451,7 @@ class _CreateEventScreenState extends State<CreateEventScreen> {
     );
   }
 
-  Widget _buildImagePicker() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 12, 16, 12),
-      child: Container(
-        constraints: const BoxConstraints(
-          minWidth: 160,
-          maxWidth: 480,
-        ),
-        decoration: BoxDecoration(
-          color: const Color(0xFF382929),
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: InkWell(
-          onTap: _pickImage,
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                const Icon(Icons.image, color: Color(0xFFBA9C9C)),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Text(
-                    _selectedImage != null
-                        ? 'Imagem selecionada'
-                        : 'Adicionar imagem do evento',
-                    style: TextStyle(
-                      color: _selectedImage != null
-                          ? AppColors.white
-                          : const Color(0xFFBA9C9C),
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                if (_selectedImage != null)
-                  const Icon(Icons.check_circle, color: Colors.green),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
+  // _buildImagePicker removido
 
   Widget _buildCreateButton() {
     return Padding(

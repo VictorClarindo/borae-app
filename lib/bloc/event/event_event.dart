@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:equatable/equatable.dart';
 
 import '../../models/event.dart';
@@ -31,29 +29,25 @@ class EventLoadByOrganizer extends EventEvent {
 /// Evento: Criar novo evento
 class EventCreate extends EventEvent {
   final Event event;
-  final File? imageFile;
 
   const EventCreate({
     required this.event,
-    this.imageFile,
   });
 
   @override
-  List<Object?> get props => [event, imageFile];
+  List<Object?> get props => [event];
 }
 
 /// Evento: Atualizar evento
 class EventUpdate extends EventEvent {
   final Event event;
-  final File? imageFile;
 
   const EventUpdate({
     required this.event,
-    this.imageFile,
   });
 
   @override
-  List<Object?> get props => [event, imageFile];
+  List<Object?> get props => [event];
 }
 
 /// Evento: Deletar evento

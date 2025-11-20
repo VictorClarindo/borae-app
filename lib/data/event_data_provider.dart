@@ -1,7 +1,8 @@
-import 'dart:io';
+// import 'dart:io'; // removido suporte a File
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+
+// import 'package:firebase_storage/firebase_storage.dart'; // suporte a imagem removido
 
 import '../models/event.dart';
 
@@ -9,32 +10,20 @@ import '../models/event.dart';
 /// Responsável por toda comunicação com Firestore e Storage para eventos
 class EventDataProvider {
   final FirebaseFirestore _firestore;
-  final FirebaseStorage _storage;
+  // final FirebaseStorage _storage; // não usado após remoção de imagens
 
   EventDataProvider({
     FirebaseFirestore? firestore,
-    FirebaseStorage? storage,
-  })  : _firestore = firestore ?? FirebaseFirestore.instance,
-        _storage = storage ?? FirebaseStorage.instance;
+  })  : _firestore = firestore ?? FirebaseFirestore.instance;
 
   /// Criar novo evento
-  Future<Event> createEvent(Event event, {File? imageFile}) async {
+  Future<Event> createEvent(Event event) async {
     try {
-      String? imageUrl;
-
-      // Se houver imagem, fazer upload
-      if (imageFile != null) {
-        imageUrl = await _uploadEventImage(event.id, imageFile);
-      }
-
-      final eventWithImage = event.copyWith(imageUrl: imageUrl);
-
       await _firestore
           .collection('events')
           .doc(event.id)
-          .set(eventWithImage.toJson());
-
-      return eventWithImage;
+          .set(event.toJson());
+      return event;
     } catch (e) {
       throw Exception('Erro ao criar evento: $e');
     }
@@ -94,21 +83,12 @@ class EventDataProvider {
   }
 
   /// Atualizar evento
-  Future<void> updateEvent(Event event, {File? imageFile}) async {
+  Future<void> updateEvent(Event event) async {
     try {
-      String? imageUrl = event.imageUrl;
-
-      // Se houver nova imagem, fazer upload
-      if (imageFile != null) {
-        imageUrl = await _uploadEventImage(event.id, imageFile);
-      }
-
-      final eventWithImage = event.copyWith(imageUrl: imageUrl);
-
       await _firestore
           .collection('events')
           .doc(event.id)
-          .update(eventWithImage.toJson());
+          .update(event.toJson());
     } catch (e) {
       throw Exception('Erro ao atualizar evento: $e');
     }
@@ -123,12 +103,7 @@ class EventDataProvider {
       });
 
       // Opcional: deletar imagem do storage
-      try {
-        final ref = _storage.ref().child('events/$eventId.jpg');
-        await ref.delete();
-      } catch (e) {
-        // Ignorar erro se imagem não existir
-      }
+      // Imagens removidas - nada a fazer no Storage
     } catch (e) {
       throw Exception('Erro ao deletar evento: $e');
     }
@@ -215,13 +190,5 @@ class EventDataProvider {
   }
 
   /// Upload de imagem do evento
-  Future<String> _uploadEventImage(String eventId, File imageFile) async {
-    try {
-      final ref = _storage.ref().child('events/$eventId.jpg');
-      final uploadTask = await ref.putFile(imageFile);
-      return await uploadTask.ref.getDownloadURL();
-    } catch (e) {
-      throw Exception('Erro ao fazer upload da imagem: $e');
-    }
-  }
+  // Métodos de upload removidos
 }

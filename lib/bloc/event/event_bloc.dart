@@ -69,10 +69,7 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     emit(const EventLoading());
 
     try {
-      await _eventDataProvider.createEvent(
-        event.event,
-        imageFile: event.imageFile,
-      );
+      await _eventDataProvider.createEvent(event.event);
       // Emitir sucesso (lista será atualizada via stream na UI)
       emit(const EventOperationSuccess(message: 'Evento criado com sucesso!'));
     } catch (e) {
@@ -88,10 +85,7 @@ class EventBloc extends Bloc<EventEvent, EventState> {
     emit(const EventLoading());
 
     try {
-      await _eventDataProvider.updateEvent(
-        event.event,
-        imageFile: event.imageFile,
-      );
+      await _eventDataProvider.updateEvent(event.event);
       emit(const EventOperationSuccess(message: 'Evento atualizado com sucesso!'));
     } catch (e) {
       emit(EventError(message: e.toString()));
