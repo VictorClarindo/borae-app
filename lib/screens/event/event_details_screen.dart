@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 
 import '../../bloc/auth/auth_bloc.dart';
 import '../../bloc/auth/auth_state.dart';
+import '../../bloc/event/event_bloc.dart';
+import '../../bloc/event/event_event.dart';
 import '../../bloc/ticket/ticket_bloc.dart';
 import '../../bloc/ticket/ticket_event.dart';
 import '../../bloc/ticket/ticket_state.dart';
@@ -23,13 +25,13 @@ class EventDetailsScreen extends StatefulWidget {
 class _EventDetailsScreenState extends State<EventDetailsScreen> {
   int _ticketQuantity = 1;
   Event? event;
-  
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     event = ModalRoute.of(context)?.settings.arguments as Event?;
   }
-  
+
   @override
   Widget build(BuildContext context) {
     if (event == null) {
@@ -53,15 +55,24 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
               backgroundColor: Colors.green,
             ),
           );
+          // Recarregar eventos para refletir nova disponibilidade
+          context.read<EventBloc>().add(const EventLoadAll());
           // Navegar para tela de sucesso
-          Navigator.of(context).pushReplacementNamed(AppRoutes.PURCHASE_SUCCESS);
+          Navigator.of(
+            context,
+          ).pushReplacementNamed(AppRoutes.PURCHASE_SUCCESS);
         }
         if (state is TicketError) {
+          final raw = state.message;
+          var friendly = raw;
+          if (raw.contains('permission-denied')) {
+            friendly =
+                'Permissão negada: verifique login e regras do Firestore.';
+          } else if (raw.toLowerCase().contains('indispon')) {
+            friendly = 'Ingressos indisponíveis para a quantidade solicitada.';
+          }
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-              backgroundColor: Colors.red,
-            ),
+            SnackBar(content: Text(friendly), backgroundColor: Colors.red),
           );
         }
       },
@@ -106,7 +117,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             width: 48,
             height: 48,
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.white, size: 24),
+              icon: const Icon(
+                Icons.arrow_back,
+                color: AppColors.white,
+                size: 24,
+              ),
               padding: EdgeInsets.zero,
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -131,33 +146,22 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
   Widget _buildEventImage() {
     final imageUrl = event!.imageUrl ?? '';
-    
+
     return Container(
       width: double.infinity,
       height: 250,
-      decoration: const BoxDecoration(
-        color: AppColors.inputBackground,
-      ),
+      decoration: const BoxDecoration(color: AppColors.inputBackground),
       child: imageUrl.isNotEmpty
           ? CachedNetworkImage(
               imageUrl: imageUrl,
               fit: BoxFit.cover,
               placeholder: (context, url) => const Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.primaryRed,
-                ),
+                child: CircularProgressIndicator(color: AppColors.primaryRed),
               ),
-              errorWidget: (context, url, error) => const Icon(
-                Icons.event,
-                color: AppColors.textHint,
-                size: 80,
-              ),
+              errorWidget: (context, url, error) =>
+                  const Icon(Icons.event, color: AppColors.textHint, size: 80),
             )
-          : const Icon(
-              Icons.event,
-              color: AppColors.textHint,
-              size: 80,
-            ),
+          : const Icon(Icons.event, color: AppColors.textHint, size: 80),
     );
   }
 
@@ -180,7 +184,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
   Widget _buildEventDetails() {
     final dateFormat = DateFormat('dd/MM/yyyy · HH:mm');
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 12),
@@ -209,7 +213,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          
+
           // Local
           Row(
             children: [
@@ -234,7 +238,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
             ],
           ),
           const SizedBox(height: 8),
-          
+
           // Categoria
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -277,7 +281,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   Widget _buildTicketsSection() {
     final available = event!.availableTickets;
     final total = event!.totalTickets;
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -310,10 +314,10 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   }
 
   Widget _buildTicketSelector() {
-    final maxTickets = event!.availableTickets < 10 
-        ? event!.availableTickets 
+    final maxTickets = event!.availableTickets < 10
+        ? event!.availableTickets
         : 10; // Limite máximo de 10 ingressos por compra
-    
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
@@ -374,7 +378,9 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Máximo de $maxTickets ingressos disponíveis'),
+                      content: Text(
+                        'Máximo de $maxTickets ingressos disponíveis',
+                      ),
                       backgroundColor: Colors.orange,
                     ),
                   );
@@ -416,11 +422,11 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
   Widget _buildPurchaseButton() {
     final totalPrice = event!.price * _ticketQuantity;
     final isAvailable = event!.availableTickets >= _ticketQuantity;
-    
+
     return BlocBuilder<TicketBloc, TicketState>(
       builder: (context, state) {
         final isLoading = state is TicketLoading;
-        
+
         return Container(
           width: MediaQuery.of(context).size.width - 32,
           padding: const EdgeInsets.all(16),
@@ -431,8 +437,8 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
           child: ElevatedButton(
             onPressed: isAvailable && !isLoading ? _handlePurchase : null,
             style: ElevatedButton.styleFrom(
-              backgroundColor: isAvailable 
-                  ? AppColors.primaryRed 
+              backgroundColor: isAvailable
+                  ? AppColors.primaryRed
                   : AppColors.textHint,
               disabledBackgroundColor: AppColors.textHint,
               minimumSize: const Size(double.infinity, 48),
@@ -469,7 +475,7 @@ class _EventDetailsScreenState extends State<EventDetailsScreen> {
 
   void _handlePurchase() {
     final authState = context.read<AuthBloc>().state;
-    
+
     if (authState is! AuthAuthenticated) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

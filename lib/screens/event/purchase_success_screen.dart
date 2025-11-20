@@ -1,9 +1,27 @@
 import 'package:flutter/material.dart';
+
 import '../../utils/app_colors.dart';
 import '../../utils/app_routes.dart';
 
-class PurchaseSuccessScreen extends StatelessWidget {
+class PurchaseSuccessScreen extends StatefulWidget {
   const PurchaseSuccessScreen({super.key});
+
+  @override
+  State<PurchaseSuccessScreen> createState() => _PurchaseSuccessScreenState();
+}
+
+class _PurchaseSuccessScreenState extends State<PurchaseSuccessScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Retornar automaticamente para Home após breve delay
+    Future.delayed(const Duration(seconds: 3), () {
+      if (!mounted) return;
+      Navigator.of(
+        context,
+      ).pushNamedAndRemoveUntil(AppRoutes.HOME, (route) => false);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +58,11 @@ class PurchaseSuccessScreen extends StatelessWidget {
             width: 48,
             height: 48,
             child: IconButton(
-              icon: const Icon(Icons.arrow_back, color: AppColors.white, size: 24),
+              icon: const Icon(
+                Icons.arrow_back,
+                color: AppColors.white,
+                size: 24,
+              ),
               padding: EdgeInsets.zero,
               onPressed: () => Navigator.of(context).pop(),
             ),
@@ -144,10 +166,9 @@ class PurchaseSuccessScreen extends StatelessWidget {
           Expanded(
             child: ElevatedButton(
               onPressed: () {
-                Navigator.of(context).pushNamedAndRemoveUntil(
-                  AppRoutes.HOME, 
-                  (route) => false,
-                );
+                Navigator.of(
+                  context,
+                ).pushNamedAndRemoveUntil(AppRoutes.HOME, (route) => false);
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryRed,
@@ -175,7 +196,9 @@ class PurchaseSuccessScreen extends StatelessWidget {
                 // Implementar compartilhamento
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Funcionalidade de compartilhamento em breve!'),
+                    content: Text(
+                      'Funcionalidade de compartilhamento em breve!',
+                    ),
                     backgroundColor: AppColors.primaryRed,
                   ),
                 );
